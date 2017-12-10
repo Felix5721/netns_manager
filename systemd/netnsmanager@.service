@@ -1,0 +1,14 @@
+[Unit]
+Description=Creates Network Namespace (%i)
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+
+ExecStart=/sbin/netnsmanager start /etc/netns_manager/netns/%i.json 
+
+ExecStop=/sbin/netnsmanager stop /etc/netns_manager/netns/%i.json
+
+[Install]
+WantedBy=multi-user.target
+
