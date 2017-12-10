@@ -3,7 +3,10 @@ package main
 import(
 	"fmt"
 	"os"
+	"os/exec"
 	"encoding/json"
+	"strconv"
+	"path/filepath"
 )
 
 type Netns struct {
@@ -51,5 +54,44 @@ func main(){
 	if err != nil{
 		os.Exit(1)
 	}
-	fmt.Println(netns.Name)
+	if start {
+		if _, err := os.Stat("./scripts/makenets.sh"); err == nil {
+			cmd := exec.Command("./scripts/makenets.sh", netns.Name, netns.Vethip, netns.Peerip, strconv.Itoa(netns.Mask))
+			err := cmd.Run()
+			if  err != nil{
+				panic(err)
+			}
+		} else if _, err := os.Stat("/etc/netns_manager/scripts/makenets.sh"); err==nil{
+			cmd := exec.Command("/etc/netns_manager/scripts/makenets.sh", netns.Name, netns.Vethip, netns.Peerip, strconv.Itoa(netns.Mask))
+			err := cmd.Run()
+			if  err != nil{
+				panic(err)
+			}
+		} else {
+			fmt.Println("Netns creation script not found")
+			os.Exit(1)
+		}
+		resolvpath := "/etc/netns/" + netns.Name
+		resolvfile := filepath.Join(resolvpath, "resolv.conf")
+		if netns.DNS_IP != "" {
+			os.MkdirAll(resolvpath, os.ModeDir)
+			entry := fmt.Sprintf("nameserver\t%s", netns.DNS_IP)
+			f, err := os.OpenFile(resolvfile, os.O_RDWR|os.O_CREATE, 0755)
+			if err != nil{
+				panic(err)
+			}
+			defer f.Close()
+			f.WriteString(entry)
+		} else {
+			if _, err := os.Stat(resolvfile); err == nil {
+				os.Remove(resolvfile)
+			}
+		}
+	} else {
+		cmd := exec.Command("ip", "netns", "delete", netns.Name)
+		err := cmd.Run()
+		if  err != nil{
+			panic(err)
+		}
+	}
 }
