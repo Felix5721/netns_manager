@@ -5,8 +5,8 @@ To get this working run:
 
 go build netnsmanager.go
 
-this will create an executable named netnsmanager
-To use it call:
+This will create an executable named netnsmanager.
+To use it call as root:
 
 ./netnsmanager start/stop netnsconf.json 
 
