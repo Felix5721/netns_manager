@@ -1,7 +1,7 @@
-## NetnsManager
+# NetnsManager
 Go Program to start different network namespaces at boot
 
-# Usage
+## Usage
 
 To use it call as root:
 
@@ -9,17 +9,17 @@ netnsmanager start/stop netnsconf.json
 
 this will create or delete a network namespace based on the settings set in the json file 
 
-# Systemd
+## Systemd
 
 systemctl start netnsmanager@sample
 
 this will create a network namespace with the configfile /etc/netns_manager/netns/sample.json
 
-# Automated Setup
+## Automated Setup
 
 run ./install.sh as root
 
-# Manual Setup
+## Manual Setup
 go build netnsmanager.go
 
 This will create an executable named netnsmanager.
