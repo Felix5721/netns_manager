@@ -33,7 +33,8 @@ func readNetnsConf(file string) (Netns, error){
 	dec := json.NewDecoder(f)
 	err := dec.Decode(&nns)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
 	//Sanity Check
@@ -71,13 +72,15 @@ func main(){
 			cmd := exec.Command("./scripts/makenets.sh", netns.Name, netns.Vethip, netns.Peerip, strconv.Itoa(netns.Mask))
 			err := cmd.Run()
 			if  err != nil{
-				panic(err)
+				fmt.Println(err)
+				os.Exit(1)
 			}
 		} else if _, err := os.Stat("/etc/netns_manager/scripts/makenets.sh"); err==nil{
 			cmd := exec.Command("/etc/netns_manager/scripts/makenets.sh", netns.Name, netns.Vethip, netns.Peerip, strconv.Itoa(netns.Mask))
 			err := cmd.Run()
 			if  err != nil{
-				panic(err)
+				fmt.Println(err)
+				os.Exit(1)
 			}
 		} else {
 			fmt.Println("Netns creation script not found")
@@ -90,7 +93,8 @@ func main(){
 			entry := fmt.Sprintf("nameserver\t%s", netns.DNS_IP)
 			f, err := os.OpenFile(resolvfile, os.O_RDWR|os.O_CREATE, 0755)
 			if err != nil{
-				panic(err)
+				fmt.Println(err)
+				os.Exit(1)
 			}
 			defer f.Close()
 			f.WriteString(entry)
@@ -103,7 +107,8 @@ func main(){
 		cmd := exec.Command("ip", "netns", "delete", netns.Name)
 		err := cmd.Run()
 		if  err != nil{
-			panic(err)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 	}
 }
