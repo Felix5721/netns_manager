@@ -31,7 +31,7 @@ function setup_ns(){
   ip netns exec $ns_name ip link set $ns_peer up
 
   #set default route for namespace
-  ip netns exec $ns_name ip route add default dev $ns_peer
+  ip netns exec $ns_name ip route add default via $ipveth dev $ns_peer
 }
 
 setup_ns $1 $2 $3 $4
