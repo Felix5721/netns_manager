@@ -7,6 +7,9 @@ import(
 	"encoding/json"
 	"strconv"
 	"path/filepath"
+	"net"
+	"errors"
+	"strings"
 )
 
 type Netns struct {
@@ -32,6 +35,14 @@ func readNetnsConf(file string) (Netns, error){
 	if err != nil {
 		panic(err)
 	}
+
+	//Sanity Check
+	if strings.Index(nns.Name, " ") != -1 || strings.Index(nns.Name, ";") != -1 || strings.Index(nns.Name, "&") != -1 {
+		return nns, errors.New("Netns Name contains illegal characters.")
+	}
+	if net.ParseIP(nns.Vethip) == nil || net.ParseIP(nns.Peerip) == nil || net.ParseIP(nns.DNS_IP) == nil {
+		return nns, errors.New("Couldn't Parse IP addresses in json file.")
+	}
 	return nns, nil
 }
 
@@ -52,6 +63,7 @@ func init() {
 func main(){
 	netns, err := readNetnsConf(nsfile)
 	if err != nil{
+		fmt.Println(err)
 		os.Exit(1)
 	}
 	if start {
