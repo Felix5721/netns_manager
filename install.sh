@@ -8,8 +8,8 @@ fi
 go build netnsmanager.go
 mv netnsmanager /usr/bin
 mkdir -p /etc/netns_manager
-cp -r scripts /etc/netns_manager
-cp -r netns	/etc/netns_manager
-cp systemd/netnsmanager@.service /etc/systemd/system/
+cp -rf scripts /etc/netns_manager
+cp -rf netns	/etc/netns_manager
+cp -f systemd/netnsmanager@.service /etc/systemd/system/
 
 echo "Installion Done"
