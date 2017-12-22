@@ -18,6 +18,8 @@ type Netns struct {
 	Peerip		string
 	Mask		int
 	DNS_IP		string
+	Lookup		string
+	RT_Tables	[]string
 }
 
 var start bool
@@ -40,6 +42,16 @@ func readNetnsConf(file string) (Netns, error){
 	//Sanity Check
 	if strings.Index(nns.Name, " ") != -1 || strings.Index(nns.Name, ";") != -1 || strings.Index(nns.Name, "&") != -1 {
 		return nns, errors.New("Netns Name contains illegal characters.")
+	}
+	if strings.Index(nns.Lookup, " ") != -1 || strings.Index(nns.Lookup, ";") != -1 || strings.Index(nns.Lookup, "&") != -1 {
+		return nns, errors.New("Netns Lookup contains illegal characters.")
+	}
+	if nns.RT_Tables != nil {
+		for _, table := range nns.RT_Tables {
+			if strings.Index(table, " ") != -1 || strings.Index(table, ";") != -1 || strings.Index(table, "&") != -1 {
+				return nns, errors.New("Netns RT_Tables contains illegal characters.")
+			}
+		}
 	}
 	if net.ParseIP(nns.Vethip) == nil || net.ParseIP(nns.Peerip) == nil || net.ParseIP(nns.DNS_IP) == nil {
 		return nns, errors.New("Couldn't Parse IP addresses in json file.")
@@ -109,6 +121,44 @@ func main(){
 		if  err != nil{
 			fmt.Println(err)
 			os.Exit(1)
+		}
+	}
+	if netns.Lookup != "" {
+		if start {
+			cmd := exec.Command("ip", "rule", "add", "from", netns.Peerip, "lookup", netns.Lookup)
+			err := cmd.Run()
+			if  err != nil{
+				fmt.Println(err)
+				os.Exit(1)
+			}
+		} else {
+			cmd := exec.Command("ip", "rule", "delete", "from", netns.Peerip, "lookup", netns.Lookup)
+			err := cmd.Run()
+			if  err != nil{
+				fmt.Println(err)
+				os.Exit(1)
+			}
+		}
+	}
+	if netns.RT_Tables != nil {
+		devname := netns.Name + "-veth"
+		iprange := netns.Vethip + "/" + strconv.Itoa(netns.Mask)
+		for _, table := range netns.RT_Tables {
+			if start {
+				cmd := exec.Command("ip", "route", "add", iprange, "dev", devname, "table", table)
+				err := cmd.Run()
+				if  err != nil{
+					fmt.Println(err)
+					os.Exit(1)
+				}
+			} else {
+				cmd := exec.Command("ip", "route", "delete", iprange, "dev", devname, "table", table)
+				err := cmd.Run()
+				if  err != nil{
+					fmt.Println(err)
+					os.Exit(1)
+				}
+			}
 		}
 	}
 }
