@@ -142,7 +142,10 @@ func main(){
 	}
 	if netns.RT_Tables != nil {
 		devname := netns.Name + "-veth"
-		iprange := netns.Vethip + "/" + strconv.Itoa(netns.Mask)
+		ipv4Mask := net.CIDRMask(netns.Mask, 32)
+		ip := net.ParseIP(netns.Vethip)
+		subnet := ip.Mask(ipv4Mask)
+		iprange := fmt.Sprintf("%s/%d", subnet, netns.Mask)
 		for _, table := range netns.RT_Tables {
 			if start {
 				cmd := exec.Command("ip", "route", "add", iprange, "dev", devname, "table", table)
