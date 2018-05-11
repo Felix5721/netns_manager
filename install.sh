@@ -5,10 +5,8 @@ if [[ $UID != 0 ]]; then
   exit 1
 fi
 
-go build netnsmanager.go
-mv netnsmanager /usr/bin
+mv netnsmanager.py /usr/bin/netnsmanager
 mkdir -p /etc/netns_manager
-cp -rf scripts /etc/netns_manager
 cp -rf netns	/etc/netns_manager
 cp -f systemd/netnsmanager@.service /etc/systemd/system/
 

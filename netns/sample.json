@@ -1,9 +1,22 @@
 {
-	"Name": "sample",
-	"Vethip": "10.1.42.0",
-	"Peerip": "10.1.42.1",
-	"Mask": 31,
-	"DNS_IP": "10.129.0.1", 
-	"#Lookup": "routing_table_name__will_be_used_for_all_packets_from_peerip",
-	"#RT_Tables" : [ "routing", "tables", "to", "add", "routes", "to", "peerip" ]
+   "name" : "sample",
+   "use_direct_rt" : false,
+   "ip4" : {
+      "addr" : "10.0.0.1",
+      "peers" : [
+         "10.0.0.2",
+         "10.0.0.3",
+         "10.0.0.4"
+      ],
+      "mask" : 29
+   },
+   "dns" : "8.8.8.8",
+   "ip6" : {
+      "addr" : "cafe:cafe::1",
+      "peers" : [
+         "cafe:cafe::2",
+         "cafe:cafe::3"
+      ],
+      "mask" : 125
+   }
 }
