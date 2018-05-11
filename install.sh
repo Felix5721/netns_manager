@@ -5,7 +5,8 @@ if [[ $UID != 0 ]]; then
   exit 1
 fi
 
-mv netnsmanager.py /usr/bin/netnsmanager
+cp netnsmanager.py /usr/bin/netnsmanager
+chmod +x /usr/bin/netnsmanager
 mkdir -p /etc/netns_manager
 cp -rf netns	/etc/netns_manager
 cp -f systemd/netnsmanager@.service /etc/systemd/system/
