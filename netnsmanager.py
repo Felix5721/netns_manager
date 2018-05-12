@@ -5,6 +5,7 @@ import os
 import re
 import sys
 import json
+import iptools
 from jinja2 import Environment, FileSystemLoader
 
 ## This program is used to setup a network namespace with a wiregurad peer running inside, for trafic redirection
@@ -40,6 +41,7 @@ def do_add_peers(nns, ip4_setup=None, ip6_setup=None, use_direct_table=False):
 		addr_veth = ip4_setup["addr"]
 		snmask = ip4_setup["mask"]
 		addr_peers = ip4_setup["peers"]
+		subnet_addr = iptools.ipv4.cidr2block(addr_veth + ("/%d" % snmask))[0]
 		#add addresses
 		subprocess.call(link_addr(veth, addr_veth + ("/%d" %  snmask)))
 		for peer_addr in addr_peers:
@@ -47,13 +49,14 @@ def do_add_peers(nns, ip4_setup=None, ip6_setup=None, use_direct_table=False):
 		#add routes
 		subprocess.call(nns_wrap(nns, route_add(peer, addr_veth, "main", snmask, True)))
 		if use_direct_table:
-			subprocess.call(route_add(veth, addr_veth, "direct", snmask))
+			subprocess.call(route_add(veth, subnet_addr, "direct", snmask))
 
 	#setup ipv6 routing
 	if not ip6_setup is None:
 		addr6_veth = ip6_setup["addr"]
 		addr6_peers = ip6_setup["peers"]
 		snmask = ip6_setup["mask"]
+		subnet_addr6 = iptools.ipv6.cidr2block(addr6_veth + ("/%d" % snmask))[0]
 		#add addresses
 		subprocess.call(link_addr(veth, addr6_veth + ( "/%d" % snmask), True))
 		for peer_addr6 in addr6_peers:
@@ -62,7 +65,7 @@ def do_add_peers(nns, ip4_setup=None, ip6_setup=None, use_direct_table=False):
 		#add routes
 		subprocess.call(nns_wrap(nns, route_add(peer, addr6_veth, "main", snmask, True, True)))
 		if use_direct_table:
-			subprocess.call(route_add(veth, addr6_veth, "direct", snmask, False, True))
+			subprocess.call(route_add(veth, subnet_addr6, "direct", snmask, False, True))
 	
 
 def nns_wrap(nns ,cmd):
