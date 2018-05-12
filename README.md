@@ -1,7 +1,7 @@
 NetnsManager
 ============
 
-Netnsmanager is a small python program that setup up an linux network namespace with a one peer that can be assigned multiple ips. It supports ipv4 and ipv6 addressen.
+Netnsmanager is a small python program that sets up a linux network namespace with one peer that can be assigned multiple ip addresses. It supports ipv4 and ipv6.
 
 # Usage
 
