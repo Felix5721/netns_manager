@@ -1,38 +1,25 @@
-# NetnsManager
-Go Program to start different network namespaces at boot
+NetnsManager
+============
 
-## Usage
+Netnsmanager is a small python program that setup up an linux network namespace with a one peer that can be assigned multiple ips. It supports ipv4 and ipv6 addressen.
 
-To use it call as root:
+# Usage
 
-netnsmanager start/stop netnsconf.json 
+## Direct 
 
-this will create or delete a network namespace based on the settings set in the json file 
+You need to be root in order for this program to work:
+
+> netnsmanager start/stop netnsconf.json 
+
+This will create a network namespace based on the setting in the specified json file. An example json file can be found in the netns foulder. 
 
 ## Systemd
 
-systemctl start netnsmanager@sample
+> systemctl start netnsmanager@<name>
 
-this will create a network namespace with the configfile /etc/netns_manager/netns/sample.json
+Use systemd to launch netnsmanger with the json file located at /etc/netns_manager/netns/<name>.json
 
-## Automated Setup
+# Installation
 
 run ./install.sh as root
-
-## Manual Setup
-go build netnsmanager.go
-
-This will create an executable named netnsmanager.
-
-To make it work outside the directory do the following.
-
-create the directory /etc/netns_manager
-
-then copy the scripts directory to it
-
-move the netnsmanager executable to a directory which is in your PATH
-
-to use netnsmanager with systemd create a netns directory in /etc/netns_manager here you will put all json config files
-
-copy the systemd service file to /etc/systemd/system, now you can start the service
 
