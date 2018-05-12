@@ -15,9 +15,9 @@ This will create a network namespace based on the setting in the specified json 
 
 ## Systemd
 
-> systemctl start netnsmanager@<name>
+> systemctl start netnsmanager@[name]
 
-Use systemd to launch netnsmanger with the json file located at /etc/netns_manager/netns/<name>.json
+Use systemd to launch netnsmanger with the json file located at /etc/netns_manager/netns/[name].json
 
 # Installation
 
